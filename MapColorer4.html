@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>test title</title>
+<script>
+	var E;
+	function prepare() {
+		/* var S = document.getElementById("sv")
+		var SD = S.getSVGDocument();
+		E = SD.getElementById('E');
+		E.setAttribute("fill", "blue"); */
+	}
+	function validateForm() {
+		var color = document.forms["myForm"]["color"].value;
+		var country = document.forms["myForm"]["country"].value;
+			
+		country = country.toLowerCase();
+		country = country.replace(" ","_");
+		
+		if (color == null || color == "") {
+			alert("Color must be filled out");
+			return false;
+		}
+		if (country == null || country == "") {
+			alert("Territory must be filled out");
+			return false;
+		}
+		var S = document.getElementById("sv");
+		var SD = S.getSVGDocument();
+		if (SD == null){
+			alert("Invalid color name. Reference w3schools.com/html/html_colornames.asp");
+			return false;
+		}
+		E = SD.getElementById(country);
+		if (E == null){
+			alert("Invalid territory name. Most are cities.");
+			return false;
+		}
+		E.setAttribute("fill", color);
+	}
+</script>
+</head>
+<body>
+<embed id="sv" src="optimized_svg.svg" width=950 height=620>
+	</embed>
+	<form name="myForm"
+		onsubmit="validateForm(); return false" method="post">
+		Color: <input type="text" name="color"> 
+		Territory: <input type="text" name="country"> 
+		<input type="submit" value="Submit">
+	</form>
+</body>
+</html>

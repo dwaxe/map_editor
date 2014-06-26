@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>test title</title>
+<script>
+	var E;
+ 	var allPaths;
+	var allIds; //an array of all of the ids
+	var S;
+	var SD;
+	function prepare() {
+		/* var S = document.getElementById("sv")
+		var SD = S.getSVGDocument();
+		E = SD.getElementById('E');
+		E.setAttribute("fill", "blue"); */
+		S = document.getElementById("sv");
+		SD = S.getSVGDocument();
+		getIds();
+		setUpMouseEvents();
+	}
+	
+	
+	
+	function validateForm() {
+		var color = document.forms["myForm"]["color"].value;
+		var country = document.forms["myForm"]["country"].value;
+		var map = document.forms["myForm"]["map"].value;
+
+		
+		if (map == "test"){
+			//var civ = {ters: ["anchorage","vancouver","yellowknife","new york"], color: "red"};
+			var civ = {ters: ["anchorage","vancouver","yellowknife","new york"], color: "red"};
+			var array = civ.ters;
+			color = civ.color;
+		}
+		if (color == null || color == "") {
+			alert("Color must be filled out");
+			return false;
+		}
+// 		S = document.getElementById("sv"); moved to prepare
+// 		SD = S.getSVGDocument(); moved to prepare
+// 		SD.documentElement.addEventListener("mousemove", hover, false);
+		
+		if (SD == null){
+			alert("Invalid color name. Reference w3schools.com/html/html_colornames.asp");
+			return false;
+			}
+		if (map == null || map == ""){
+			country = country.toLowerCase();
+			country = country.replace(" ","_");
+			if (country == null || country == "") {
+				alert("Territory must be filled out");
+				return false;
+			}
+			E = SD.getElementById(country);
+			if (E == null){
+				alert("Invalid territory name. Most are cities.");
+				return false;
+			}
+			    E.setAttribute("fill", color);
+			    addOutput(country + ";" + color);
+			} 
+		else {
+			for (var elem = 0; elem < array.length; elem ++){
+				country = array[elem];
+				country = country.toLowerCase();
+				country = country.replace(" ","_");
+				E = SD.getElementById(country);
+				if (E == null){
+				    alert("Invalid territory name. Most are cities.");
+					return false;
+				}
+				E.setAttribute("fill", color);
+			}	
+		}
+	}
+	
+	function getIds(){
+	    allPaths = SD.getElementsByTagName("path");
+	   
+        allIds = [];
+        for (var i = 0, n = allPaths.length; i < n; ++i) {
+            var el = allPaths[i];
+            if (el.id) { 
+                allIds.push(el.id);
+                //   addOutput(el.id); //debug
+                //add to drop-down
+                // var select = document.getElementById("territory");
+                // var el2 = document.createElement("option");
+                // el2.textContent = el.id;
+                // el2.value = el.id;
+                // select.appendChild(el2);
+            }
+        }
+        allIds.sort();
+        for(var i = 0; i<allIds.length; i++){
+            var id = allIds[i];
+            var select = document.getElementById("territory");
+            var el2 = document.createElement("option");
+            el2.textContent = id;
+            el2.value = id;
+            select.appendChild(el2);
+        }
+	}
+	
+	function setUpMouseEvents(){
+	    var index;
+	    for(index = 0; index<allPaths.length; index++){
+	        var el = allPaths[index];
+	        el.addEventListener('mousemove',hoverOver,false);
+	        el.addEventListener('click',mouseLeftClick,false);
+	        el.addEventListener('mouseout',unhover,false);
+	       // el.addEventListener('contextmenu',mouseRightClick,false); //for eventually selecting multiple
+	       // addOutput("3");
+	    }
+	}
+	
+	function mouseLeftClick(evt){
+	    var el = evt.target;
+	    var option = document.getElementById('territory');
+	    var color = document.forms["myForm"]["color"].value;
+        option.value = el.id;
+        var currentFill = el.getAttribute("fill");
+        if(currentFill!=color&&currentFill!="#0F0"){
+            validateForm();
+        }else{
+            alert("Unselectable Territory");
+        }
+	    
+	}
+	
+// 	//for eventually selecting multiple
+// 	function mouseRightClick(evt){
+// 	    evt.preventDefault();
+// 	    var el = evt.target;
+// 	    el.setAttribute("stroke", "black");
+//         el.setAttribute("stroke-linejoin", "round");
+//         el.setAttribute("stroke-dasharray", "2,2");
+//         el.setAttribute("stroke-width", 3);
+// 	}
+	
+    function hoverOver(evt){
+        var el = evt.target;
+	    var option = document.getElementById('territory');
+	   // var color = document.forms["myForm"]["color"].value;
+        option.value = el.id;
+        // var currentFill = el.getAttribute("fill");
+        // if(currentFill!=color&&currentFill!="#0F0"){
+        //     validateForm();
+        // }
+        // el.setAttribute("transform", "translate(5,5)");
+        el.setAttribute("stroke", "white");
+        el.setAttribute("stroke-linejoin", "round");
+        el.setAttribute("stroke-width", 3);
+        // var el = evt.target;
+        
+        // // element.setAttribute("fill", "red"); //debug
+        // addOutPut("5");
+        // // show tooltip TODO
+    }
+    
+    function unhover(evt){
+        var el = evt.target;
+        // el.setAttribute("transform", "translate(0,0)");
+        // el.setAttribute("transform", "translate(0,0)");
+        el.setAttribute("stroke-width", 0);
+    }
+	
+	function addOutput(text){
+        var TheTextBox = document.getElementById("outputbox");
+        // TheTextBox.innerHTML = TheTextBox.innerHTML +  text + "<br>";
+        // var newtext = document.myform.inputtext.value;
+    	TheTextBox.value += ":" + text+"\n";
+    	TheTextBox.scrollTop = TheTextBox.scrollHeight;
+    }
+    
+    function sendOrders(){
+        // var link = "mailto:me@example.com"
+        //      + "?cc=myCCaddress@example.com"
+        //      + "&subject=" + escape("This is my subject")
+        //      + "&body=" + escape(document.getElementById('myText').value)
+        // ;
+    
+        // window.location.href = link
+        window.location.href = "mailto:me@example.com"
+             + "?subject=" + "orders"
+             + "&body=" + document.getElementById("outputbox").value;
+    }
+    
+    
+    // //temp
+    // function countryHovered(evt) {
+    //   if(picker.visible())
+    //     return false;
+
+    //   if(!lastevent)
+    //     lastevent = evt;
+
+    //   dx = Math.abs(lastevent.clientX-evt.clientX);
+    //   dy = Math.abs(lastevent.clientY-evt.clientY);
+    //   if(lastevent.type == "mousedown" && (dx > 2 || dy > 2))
+    //     picker.stopShowTimer();
+
+    //   lastevent = evt;
+
+    //   var elm = evt.target;
+    //   var classattr = null;
+    //   while(elm && !classattr) {
+    //     if(elm.nodeType == Node.ELEMENT_NODE && elm.hasAttribute("class"))
+    //       classattr = elm.getAttribute("class");
+    //     elm = elm.parentNode;
+    //   }
+
+    //   var found = false;
+    //   if(classattr) {
+    //     var classnames = classattr.split(/ /);
+    //     var cc = classnames[classnames.length-1];
+    //     if(cc.length == 2) {
+    //       selectedCountry = cc;
+    //       found = true;
+    //     }
+    //   }
+
+    //   if(found) {
+    //     mb.setText(ctol[selectedCountry]);
+    //     if(!mb.visible())
+    //       mb.show(300,50);
+    //   } else {
+    //     mb.hide();
+    //   }
+    // }
+    
+    // function showHoverMenu(evt) {
+    //     var lastevent = evt;   
+    //     var found = false;
+    //     if(classattr) {
+    //         var classnames = classattr.split(/ /);
+    //         var cc = classnames[classnames.length-1];
+    //         if(cc.length == 2) {
+    //             selectedCountry = cc;
+    //             found = true;
+    //         }
+    //     }
+    //     var elm = evt.target;
+    //     var id = elm.getAttribute("id");
+        
+    //     addOutput("estetstest");
+    //     }
+        
+    // }
+</script>
+</head>
+<body onload="prepare();">
+    
+	<form name="myForm"
+		onsubmit="validateForm(); return false" method="post">
+		Color: <input type="text" name="color"> 
+		Territory: <select id="territory" name="country"></select>
+		<!--Territory: <input type="text" name="country"> -->
+		Map: <input type="text" name="map">
+		<input type="submit" value="Submit">
+	</form>
+	<embed id="sv" src="optimized_svg.svg" width=950 height=620></embed>
+	<div>
+    	<textarea id="outputbox" rows="4" cols="50"></textarea>
+    </div>
+    <button type="button" onclick="sendOrders(); return false">Send Orders</button>
+</body>
+</html>
+
+
